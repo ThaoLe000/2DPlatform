@@ -5,11 +5,20 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
+    [Header("Player")]
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private Transform respawnPoint;
+    [SerializeField] private float respawnDelay;
     public Player player;
 
     [Header("Fruits Management")]
     public bool fruitsAreRandom;
     public int fruitsCollected;
+    public int totalFruits;
+
+    [Header("Checkpoint")]
+    public bool canReactivate;
 
     private void Awake()
     {
@@ -22,7 +31,30 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void Start()
+    {
+        CollectFruitsInfo();
+    }
+    private void CollectFruitsInfo()
+    {
+        Fruits[] allFruits = FindObjectsOfType<Fruits>();
+        totalFruits = allFruits.Length;
+    }
 
+    public void UpdateRespawnPosition(Transform newRespawnPoint)
+    {
+        respawnPoint = newRespawnPoint;
+    }
+    public void RespawnPlayer()
+    {
+        StartCoroutine(RespawnCourutine());
+    }
+    private IEnumerator RespawnCourutine()
+    {
+        yield return new WaitForSeconds(respawnDelay);
+        GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position,Quaternion.identity);
+        player = newPlayer.GetComponent<Player>();
+    }
     public void AddFruit()
     {
         fruitsCollected++;

@@ -47,6 +47,15 @@ TagManager:
   - name: Ground
     uniqueID: 410557181
     locked: 0
+  - name: Traps
+    uniqueID: 1906301973
+    locked: 0
+  - name: Enemies
+    uniqueID: 846330191
+    locked: 0
+  - name: Items
+    uniqueID: 1659248881
+    locked: 0
   - name: Player
     uniqueID: 656816743
     locked: 0

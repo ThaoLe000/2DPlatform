@@ -7,11 +7,14 @@ public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator animator;
+    private CapsuleCollider2D cd;
+    private bool CanBeControlled = false;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float doubleJumpForce;
+    private float defaultGravityScale;
     private bool canDoubleJump;
 
     [Header("Buffer & Coyote jump")]
@@ -43,19 +46,28 @@ public class Player : MonoBehaviour
 
     private bool facingRight = true;
     private int facingDir = 1;
+
+    [Header("VFX")]
+    [SerializeField] private GameObject deathVFX;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        cd = GetComponent<CapsuleCollider2D>();
         animator = GetComponentInChildren<Animator>();
+    }
+
+    private void Start()
+    {
+        defaultGravityScale = rb.gravityScale;
+        RespawnFinished(false);
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Knockback();
-        }
-
         UpdateAirbornStatus();
+
+        if (CanBeControlled == false) return;
+
+        if(isKnocked) return;
 
         if (isKnocked) return;
 
@@ -66,21 +78,43 @@ public class Player : MonoBehaviour
         HandleCollision();
         HandleAnimations();
     }
-
-    public void Knockback()
+    public void RespawnFinished(bool finished)
     {
+        if (finished == true)
+        {
+            rb.gravityScale = defaultGravityScale;
+            CanBeControlled = true;
+            cd.enabled = true;
+        }
+        else
+        {
+            rb.gravityScale = 0;
+            CanBeControlled= false;
+            cd.enabled = false;
+        }
+    }
+
+    public void Knockback(float sourceDamageXPosition)
+    {
+        float knockbackDir = 1;
+        if(transform.position.x < sourceDamageXPosition)
+        {
+            knockbackDir = -1;
+        }
+
         if (isKnocked) return;
 
         StartCoroutine(KnockbackRoutine());
-        animator.SetTrigger("knockback");
-        rb.velocity = new Vector2(knockbackPower.x * -facingDir, knockbackPower.y);
+        rb.velocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
     }
 
     private IEnumerator KnockbackRoutine()
     {
         isKnocked = true;
+        animator.SetBool("isKnocked", true);
         yield return new WaitForSeconds(knockbackDuration);
         isKnocked = false;
+        animator.SetBool("isKnocked", false);
     }
     private void UpdateAirbornStatus()
     {
@@ -241,6 +275,12 @@ public class Player : MonoBehaviour
     {
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDir), transform.position.y));
+    }
+
+    public void Die()
+    {
+        GameObject nowDeathVfx = Instantiate(deathVFX,transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }
 
