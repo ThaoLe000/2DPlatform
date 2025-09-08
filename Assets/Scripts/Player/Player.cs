@@ -37,6 +37,11 @@ public class Player : MonoBehaviour
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private float wallCheckDistance;
     [SerializeField] private LayerMask whatIsGround;
+    [Space]
+    [SerializeField] private Transform enemyCheck;
+    [SerializeField] private float enemyCheckRadius;
+    [SerializeField] private LayerMask whatIsEnemy;
+
     private bool isGrounded;
     private bool isAirborne;
     private bool isWallDetected;
@@ -65,18 +70,40 @@ public class Player : MonoBehaviour
     {
         UpdateAirbornStatus();
 
-        if (CanBeControlled == false) return;
+        if (CanBeControlled == false)
+        {
+            HandleCollision();
+            HandleAnimations();
+            return;
+        }
 
         if(isKnocked) return;
 
         if (isKnocked) return;
 
+        HandleEnemyDetection();
         HandleInput();
         HandleWallSlide();
         HandleMovement();
         HandleFlip();
         HandleCollision();
         HandleAnimations();
+    }
+    private void HandleEnemyDetection()
+    {
+        if (rb.velocity.y == 0) return;
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(enemyCheck.position, enemyCheckRadius, whatIsEnemy);
+
+        foreach (var enemy in colliders)
+        {
+            Enemy newEnemy = enemy.GetComponent<Enemy>();
+            if(newEnemy != null)
+            {
+                newEnemy.Die();
+                Jump();
+            }
+        }
     }
     public void RespawnFinished(bool finished)
     {
@@ -213,6 +240,7 @@ public class Player : MonoBehaviour
         canDoubleJump = true;
         rb.velocity = new Vector2(wallJumpForce.x * -facingDir, wallJumpForce.y);
         Flip();
+        StopAllCoroutines();
         StartCoroutine(WallJumpRoutine());
     }
     private IEnumerator WallJumpRoutine()
@@ -273,6 +301,7 @@ public class Player : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Gizmos.DrawWireSphere(enemyCheck.position, enemyCheckRadius);
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDir), transform.position.y));
     }
@@ -281,6 +310,23 @@ public class Player : MonoBehaviour
     {
         GameObject nowDeathVfx = Instantiate(deathVFX,transform.position, Quaternion.identity);
         Destroy(gameObject);
+    }
+
+    public void Push(Vector2 direction, float duration = 0)
+    {
+        StartCoroutine(PushCouroutine(direction, duration));
+    }
+
+    private IEnumerator PushCouroutine(Vector2 direction, float duration)
+    {
+        CanBeControlled = false;
+
+        rb.velocity = Vector2.zero;
+        rb.AddForce(direction, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(duration);
+
+        CanBeControlled = true;
     }
 }
 
