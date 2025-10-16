@@ -14,6 +14,7 @@ public class Finishpoint : MonoBehaviour
         {
             animator.SetTrigger("activate");
             Debug.Log("Winner");
+            UIManager.Instance.CompleteLevel();
         }
     }
 }

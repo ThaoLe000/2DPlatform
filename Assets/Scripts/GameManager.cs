@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
 
     [Header("Checkpoint")]
     public bool canReactivate;
-
     private void Awake()
     {
         if (Instance == null)
