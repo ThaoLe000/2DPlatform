@@ -13,16 +13,22 @@ public class Panel_Complete : MonoBehaviour
 
     public void Start()
     {
+        start1.sprite = starSprite;
         Debug.Log("CompleteLevel được gọi");
         if (GameManager.Instance.fruitsCollected == GameManager.Instance.totalFruits)
         {
-            start1.sprite = starSprite;
             start2.sprite = starSprite;
+        }
+        
+        if(GameManager.Instance.timeRemaining > 0)
+        {
             start3.sprite = starSprite;
         }
     }
     public void NextLevel()
     {
+        Time.timeScale = 1f;
+        StopAllCoroutines();
         int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
         currentLevelIndex++;
         SceneManager.LoadScene(currentLevelIndex);

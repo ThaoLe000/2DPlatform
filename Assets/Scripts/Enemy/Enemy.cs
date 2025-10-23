@@ -58,7 +58,11 @@ public class Enemy : MonoBehaviour
     {
         if (player == null)
         {
-            player = GameManager.Instance.player.transform;
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+            }
         }
     }
     protected virtual void Update()

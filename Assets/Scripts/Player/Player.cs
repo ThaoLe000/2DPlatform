@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float knockbackDuration = 1;
     [SerializeField] private Vector2 knockbackPower;
     private bool isKnocked;
+    private int hp = 3;
 
     [Header("Collision")]
     [SerializeField] private float groundCheckDistance;
@@ -133,6 +134,12 @@ public class Player : MonoBehaviour
 
         StartCoroutine(KnockbackRoutine());
         rb.velocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
+        hp--;
+        if (hp <= 0)
+        {
+            Die();
+            GameManager.Instance.RespawnPlayer();
+        }
     }
 
     private IEnumerator KnockbackRoutine()

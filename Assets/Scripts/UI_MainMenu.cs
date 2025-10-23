@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -17,6 +17,10 @@ public class UI_MainMenu : MonoBehaviour
     }
     public void ExitGame()
     {
-        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // Dừng play mode
+#else
+        Application.Quit(); // Thoát khi build thật
+#endif
     }
 }

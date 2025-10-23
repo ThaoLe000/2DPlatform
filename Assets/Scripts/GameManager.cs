@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
 
     [Header("Checkpoint")]
     public bool canReactivate;
+
+    [Header("Time")]
+    public float timeRemaining;
     private void Awake()
     {
         if (Instance == null)
@@ -33,6 +36,21 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         CollectFruitsInfo();
+        StartCoroutine(CountdownCoroutine());
+    }
+
+    
+    private IEnumerator CountdownCoroutine()
+    {
+        while (timeRemaining > 0) {
+            yield return new WaitForSeconds(1f);
+            timeRemaining--;
+            UIManager.Instance.UpdateTimerUI(timeRemaining);
+        }
+        timeRemaining = 0;
+        UIManager.Instance.UpdateTimerUI(0);
+
+
     }
     private void CollectFruitsInfo()
     {
