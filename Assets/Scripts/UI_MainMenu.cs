@@ -4,15 +4,22 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class UI_MainMenu : MonoBehaviour
 {
     public string sceneName;
     [SerializeField] private GameObject settingPanel;
+    private CanvasGroup canvasGroup;
 
     private void Start()
     {
+        canvasGroup = settingPanel.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = settingPanel.AddComponent<CanvasGroup>();
+
         settingPanel.SetActive(false);
+        canvasGroup.alpha = 0;
     }
     public void NewGame()
     {
@@ -21,10 +28,14 @@ public class UI_MainMenu : MonoBehaviour
     public void SettingPanel()
     {
         settingPanel.SetActive(true);
+        canvasGroup.alpha = 0;
+
+        canvasGroup.DOFade(1f, 0.5f).SetEase(Ease.OutQuad);
     }
     public void ClosePanel()
     {
-        settingPanel.SetActive(false);
+        canvasGroup.DOFade(0f, 0.5f).SetEase(Ease.InQuad)
+            .OnComplete(() => settingPanel.SetActive(false));
     }
 
     public void ExitGame()
