@@ -32,10 +32,11 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        CollectFruitsInfo();
     }
     private void Start()
     {
-        CollectFruitsInfo();
+        //CollectFruitsInfo();
         StartCoroutine(CountdownCoroutine());
     }
 

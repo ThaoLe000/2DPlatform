@@ -9,6 +9,7 @@ public class Fruits : MonoBehaviour
     [SerializeField] private GameObject pickupVfx;
 
     private GameManager gameManager;
+    private UIManager uiManager;
     private Animator animator;
 
 
@@ -19,6 +20,7 @@ public class Fruits : MonoBehaviour
     private void Start()
     {
         gameManager = GameManager.Instance;
+        uiManager = UIManager.Instance;
         SetRandomLookNeeded();
     }
     private void SetRandomLookNeeded()
@@ -42,6 +44,7 @@ public class Fruits : MonoBehaviour
         if (player != null)
         {
             gameManager.AddFruit();
+            uiManager.UpdateFruitsUI(1);
             Destroy(gameObject);
 
             GameObject newFx = Instantiate(pickupVfx, transform.position, Quaternion.identity);

@@ -11,6 +11,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject completePanel;
     [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TextMeshProUGUI fruitText;
+
+    private int totalFruits;
 
 
     private void Awake()
@@ -26,6 +29,11 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void Start()
+    {
+        totalFruits = GameManager.Instance.totalFruits;
+        UpdateFruitsUI(0);
+    }
     public void CompleteLevel()
     {
         Time.timeScale = 0f;
@@ -40,5 +48,12 @@ public class UIManager : MonoBehaviour
 
         timerText.text = $"{minutes}: {seconds:D2}";
         timerText.color = time <= 10 ? Color.red : Color.white;
+    }
+    public void UpdateFruitsUI(int fruits)
+    {
+        totalFruits -= fruits;
+        if (totalFruits < 0) totalFruits = 0;
+
+        fruitText.text = totalFruits.ToString();
     }
 }
